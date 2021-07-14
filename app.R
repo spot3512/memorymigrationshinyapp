@@ -17,7 +17,7 @@ ui <- fluidPage(
                         label = "Run Model"),
            downloadButton(outputId = "downloadData", 
                           label = "Download Results"),
-           #   progressBar(id = "pb1", value = 50),
+           #   progressBar(id = "pb1", value = 72),
            radioButtons(inputId = "world",
                         label = "Initial distribution of population in year 0", 
                         choices = c("Optimal" = "world_optimal", "Non-Migratory" = "world_nonmigratory", "Sinusoidal" = "world_sinusoidal"), inline = TRUE),
@@ -28,7 +28,7 @@ ui <- fluidPage(
                         value = 100, min = 0, step = 1),
            numericInput(inputId = "beta",
                         label = "Strength of Sociality - Beta",
-                        value = 400, min = 0, step = 50),
+                        value = 400, min = 0, step = 72),
            sliderInput(inputId = "kappa",
                        label = "Proportion reference vs. working memory - Kappa",
                        value = 0, min = 0, max = 1),
@@ -65,7 +65,7 @@ ui <- fluidPage(
            numericInput(inputId = "beta.t", label = "Resource Change in Time ", value = 0, step = 1),
            numericInput(inputId = "psi_x", label = "Stochasticity in Space", value = 0, step = 1),
            numericInput(inputId = "psi_t", label = "Stochasticity in Time ", value = 0, step = 1),
-           numericInput(inputId = "x_null", label = "Constraint in Space ", value = 50, step = 1),
+           numericInput(inputId = "x_null", label = "Constraint in Space ", value = 72, step = 1),
            numericInput(inputId = "n_years_null", label = "Years of Stable Resource ", value = 0, step = 1),
            radioButtons(inputId = "resource",
                         label = "Type of resource", 
@@ -224,12 +224,12 @@ server <- function(input, output, session) {
     
     
     
-    par(mfrow = c(ceiling(min(dim(Resource.CC))/5), 5), mar = c(0,0,1,0), oma = c(2,2,0,2), tck = 0.01)
+    par(mfrow = c(ceiling(min(dim(Resource.CC))/5), 5), mar = c(1,1,1,1), oma = c(2,2,0,2), tck = 0.01)
     for (i in 1:min(dim(Resource.CC))) image(Resource.CC[i,,], main = paste("year", i-1), yaxt = "n", xaxt = "n")
     
   })
   
-  output$Image <- renderPlot({
+  output$Image <- renderImage({
     
     
     progress <- Progress$new(session, min=1, max=15)
@@ -238,12 +238,43 @@ server <- function(input, output, session) {
     progress$set(message = 'Calculation in progress',
                  detail = 'This may take a while...')
     
+    width  <- session$clientData$output_Image_width
+    height <- session$clientData$output_Image_height
+    
+    pixelratio <- session$clientData$pixelratio
+    
+    outfile <- tempfile(fileext='.png')
+    
+    png(outfile, width = width*pixelratio, height = height*pixelratio,
+        res = 72*pixelratio)
     plotManyRuns(simulation()[[1]]$pop, world = simulation()[[3]], nrow=ceiling(length(simulation()[[1]]$pop)/10), labelyears=TRUE)
-  }, res = 150)
+    dev.off()
+    
+    list(src = outfile,
+         width = width,
+         height = height,
+         alt = "This is alternate text")
+  }, deleteFile = TRUE)
   
-  output$Resourceimage <- renderPlot({
+  
+  output$Resourceimage <- renderImage({
+    width  <- session$clientData$output_Resourceimage_width
+    height <- session$clientData$output_Resourceimage_height
+    
+    pixelratio <- session$clientData$pixelratio
+    
+    outfile <- tempfile(fileext='.png')
+    
+    png(outfile, width = width*pixelratio, height = height*pixelratio,
+        res = 72*pixelratio)
     resourceImage()
-  }, res = 150)
+    dev.off()
+    
+    list(src = outfile,
+         width = width,
+         height = height,
+         alt = "This is alternate text")
+  }, deleteFile = TRUE)
   
   output$Indices <- renderTable({
     simulation()[[2]][c("FE", "avgFE", "TE", "avgTE", "SA_total", "final_similarity", "n.runs" )]
@@ -252,20 +283,50 @@ server <- function(input, output, session) {
   
   
   # double Plot (migration and resource) ----------------------
-  output$Memory <- renderPlot({
+  output$Memory <- renderImage({
+    width  <- session$clientData$output_Memory_width
+    height <- session$clientData$output_Memory_height
+    
+    pixelratio <- session$clientData$pixelratio
+    
+    outfile <- tempfile(fileext='.png')
+    
+    png(outfile, width = width*pixelratio, height = height*pixelratio,
+        res = 72*pixelratio)
     doublePlotForShiny(simulation()$sim$pop, 
                        world = simulation()$world)
-  }, res = 150)
+    dev.off()
+    
+    list(src = outfile,
+         width = width,
+         height = height,
+         alt = "This is alternate text")
+  }, deleteFile = TRUE)
   
-  output$MigrationHat <- renderPlot({
-    par(mfrow = c(1,2), mar = c(2,2,1,1), 
+  output$MigrationHat <- renderImage({
+    width  <- session$clientData$output_MigrationHat_width
+    height <- session$clientData$output_MigrationHat_height
+    
+    pixelratio <- session$clientData$pixelratio
+    
+    outfile <- tempfile(fileext='.png')
+    
+    png(outfile, width = width*pixelratio, height = height*pixelratio,
+        res = 72*pixelratio)
+    par(mfrow = c(1,2), mar = c(2,2,2,2), 
         tck = 0.01, mgp = c(1.5,.25,0), 
         bty = "l", cex.lab = 1.25, las = 1, xpd = NA)
     with(simulation(),
          plotMigrationHat(sim$migration.hat, 
                           x.peak = x.peak, t.peak = t.peak)
     )
-  }, res = 150)
+    dev.off()
+    
+    list(src = outfile,
+         width = width,
+         height = height,
+         alt = "This is alternate text")
+  }, deleteFile = TRUE)
   
   output$downloadData <- downloadHandler(
     filename = "simulationRun.csv",
@@ -275,6 +336,7 @@ server <- function(input, output, session) {
     }
   )
 }
+
 
 
 shinyApp(ui, server)
