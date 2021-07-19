@@ -5,10 +5,10 @@ account: spot3512
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4378849
-bundleId: 4820051
+bundleId: 4835472
 url: https://spot3512.shinyapps.io/memorymigrationshinyapp/
-when: 1626293275.66986
-lastSyncTime: 1626293275.66989
+when: 1626723129.18724
+lastSyncTime: 1626723129.18725
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: README.md

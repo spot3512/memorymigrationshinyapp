@@ -7,73 +7,78 @@ library("shinythemes")
 library("rsconnect")
 
 # Setting up Input Interface --------------------------
-ui <- fluidPage(
-  theme = shinytheme("superhero"),
-  h1("Memory Migration model"),
-  fluidRow(
-    column(3,
-           h3("Migratory Population"),
-           actionButton(inputId = "run", 
-                        label = "Run Model"),
-           downloadButton(outputId = "downloadData", 
-                          label = "Download Results"),
-           #   progressBar(id = "pb1", value = 72),
-           radioButtons(inputId = "world",
-                        label = "Initial distribution of population in year 0", 
-                        choices = c("Optimal" = "world_optimal", "Non-Migratory" = "world_nonmigratory", "Sinusoidal" = "world_sinusoidal"), inline = TRUE),
-           numericInput(inputId = "years", label = "Duration of simulation:", value = 5, step = 1),
-           numericInput(inputId = "threshold", label = "Threshold of Similarity", value = 0.999, min = 0, max = 1, step = 0.01),
-           numericInput(inputId = "alpha",
-                        label = "Resource Following - Alpha",
-                        value = 100, min = 0, step = 1),
-           numericInput(inputId = "beta",
-                        label = "Strength of Sociality - Beta",
-                        value = 400, min = 0, step = 72),
-           sliderInput(inputId = "kappa",
-                       label = "Proportion reference vs. working memory - Kappa",
-                       value = 0, min = 0, max = 1),
-           numericInput(inputId = "lambda",
-                        label = "Spatial Scale of Sociality - Lambda",
-                        value = 80, min = 0, step = 1),
-           numericInput(inputId = "epsilon",
-                        label = "Diffusion Parameter - Epsilon",
-                        value = 4, min = 0, step = 1)
-    ),
-    column(6,
-           h3("Migratory Population"),
-           tableOutput("Indices"),
-           plotOutput("Image", height = "400px"),
-           h3("Memory"),
-           plotOutput("Memory", height = "400px"),
-           plotOutput("MigrationHat", height = "400px"),
-           h3("Resource"),
-           plotOutput("Resourceimage", height = "400px")
-    ),
-    column(3,
-           h3("Resource"),
-           actionButton(inputId = "viewresource", 
-                        label = "View Resource"),
-           sliderInput(inputId = "x.sd",
-                       label = "Resource Space Distribution",
-                       value = 12, min = 0, max = 15),
-           sliderInput(inputId = "t.sd",
-                       label = "Resource Time Distribution",
-                       value = 6, min = 0, max = 15),
-           numericInput(inputId = "mu.x0", label = "Initial Resource Position in Space", value = 30, step = 1),
-           numericInput(inputId = "mu.t0", label = "Initial Resource Position in Time", value = 25, step = 1),
-           numericInput(inputId = "beta.x", label = "Resource Change in Space", value = 0, step = 1),
-           numericInput(inputId = "beta.t", label = "Resource Change in Time ", value = 0, step = 1),
-           numericInput(inputId = "psi_x", label = "Stochasticity in Space", value = 0, step = 1),
-           numericInput(inputId = "psi_t", label = "Stochasticity in Time ", value = 0, step = 1),
-           numericInput(inputId = "x_null", label = "Constraint in Space ", value = 72, step = 1),
-           numericInput(inputId = "n_years_null", label = "Years of Stable Resource ", value = 0, step = 1),
-           radioButtons(inputId = "resource",
-                        label = "Type of resource", 
-                        choices = c("Island" = "resources_island", "Drifting" = "resources_drifting"), inline = TRUE)
-    ),
-    
-    
-  ))
+ui <- 
+  navbarPage("Memory Migration Model", collapsible = TRUE, inverse = TRUE, theme = shinytheme("superhero"),
+             tabPanel("Run Simulation", 
+                      fluidPage(
+                        theme = shinytheme("superhero"),
+                        fluidRow(
+                          column(3,
+                                 h3("Population"),
+                                 actionButton(inputId = "run", 
+                                              label = "Run Model"),
+                                 downloadButton(outputId = "downloadData", 
+                                                label = "Download Results"),
+                                 #   progressBar(id = "pb1", value = 72),
+                                 radioButtons(inputId = "world",
+                                              label = "Initial distribution of population in year 0", 
+                                              choices = c("Optimal" = "world_optimal", "Non-Migratory" = "world_nonmigratory", "Sinusoidal" = "world_sinusoidal"), inline = TRUE),
+                                 numericInput(inputId = "years", label = "Duration of simulation:", value = 5, step = 1),
+                                 numericInput(inputId = "threshold", label = "Threshold of Similarity", value = 0.999, min = 0, max = 1, step = 0.01),
+                                 numericInput(inputId = "alpha",
+                                              label = "Resource Following - Alpha",
+                                              value = 100, min = 0, step = 1),
+                                 numericInput(inputId = "beta",
+                                              label = "Strength of Sociality - Beta",
+                                              value = 400, min = 0, step = 1),
+                                 sliderInput(inputId = "kappa",
+                                             label = "Proportion reference vs. working memory - Kappa",
+                                             value = 0, min = 0, max = 1),
+                                 numericInput(inputId = "lambda",
+                                              label = "Spatial Scale of Sociality - Lambda",
+                                              value = 80, min = 0, step = 1),
+                                 numericInput(inputId = "epsilon",
+                                              label = "Diffusion Parameter - Epsilon",
+                                              value = 4, min = 0, step = 1)
+                          ),
+                          column(6,
+                                 h3("Migratory Population"),
+                                 tableOutput("Indices"),
+                                 plotOutput("Image", height = "400px"),
+                                 h3("Memory"),
+                                 plotOutput("Memory", height = "200px"),
+                                 plotOutput("MigrationHat", height = "200px"),
+                                 h3("Resource"),
+                                 plotOutput("Resourceimage", height = "300px")
+                          ),
+                          column(3,
+                                 h3("Resource"),
+                                 actionButton(inputId = "viewresource", 
+                                              label = "View Resource"),
+                                 sliderInput(inputId = "x.sd",
+                                             label = "Resource Space Distribution",
+                                             value = 12, min = 0, max = 15),
+                                 sliderInput(inputId = "t.sd",
+                                             label = "Resource Time Distribution",
+                                             value = 6, min = 0, max = 15),
+                                 numericInput(inputId = "mu.x0", label = "Initial Resource Position in Space", value = 30, step = 1),
+                                 numericInput(inputId = "mu.t0", label = "Initial Resource Position in Time", value = 25, step = 1),
+                                 numericInput(inputId = "beta.x", label = "Resource Change in Space", value = 0, step = 1),
+                                 numericInput(inputId = "beta.t", label = "Resource Change in Time ", value = 0, step = 1),
+                                 numericInput(inputId = "psi_x", label = "Stochasticity in Space", value = 0, step = 1),
+                                 numericInput(inputId = "psi_t", label = "Stochasticity in Time ", value = 0, step = 1),
+                                 numericInput(inputId = "n_years_null", label = "Years of Stable Resource ", value = 0, step = 1),
+                                 radioButtons(inputId = "resource",
+                                              label = "Type of resource", 
+                                              choices = c("Island" = "resources_island", "Drifting" = "resources_drifting"), inline = TRUE)
+                          ),
+                          
+                          
+                        ))),
+             tabPanel("Instructions", tags$iframe(style="height:1000px; width:100%; scrolling=yes",
+                                                  src="https://www.dropbox.com/s/o13apfhcaqvt5v2/Shiny%20App%20Instructions.pdf?raw=1"))
+             
+  )
 
 
 
@@ -107,8 +112,8 @@ server <- function(input, output, session) {
     
     par0 <- getCCpars(mu_x0 = as.numeric(input$mu.x0), 
                       mu_t0 = as.numeric(input$mu.t0),
-                      beta_x = as.numeric(input$beta.x),
-                      beta_t = as.numeric(input$beta.t),
+                      beta_x = -as.numeric(input$beta.x),
+                      beta_t = -as.numeric(input$beta.t),
                       n.years = as.numeric(input$years),
                       sigma_x = as.numeric(input$x.sd),
                       sigma_t = as.numeric(input$t.sd),
@@ -121,14 +126,14 @@ server <- function(input, output, session) {
     }
     
     if(input$resource == "resources_drifting"){
-      Resource.CC <- aaply(par0, 1, function(p) getResource_drifting(world, p, as.numeric(input$x_null)))
+      Resource.CC <- aaply(par0, 1, function(p) getResource_drifting(world, p, 0))
       world$resource <- Resource.CC
     }
     attr(world$resource, "par") <- par0[nrow(par0),]
     resource_param <- data.frame(mu_x0 = as.numeric(input$mu.x0), 
                                  mu_t0 = as.numeric(input$mu.t0),
-                                 beta_x = as.numeric(input$beta.x),
-                                 beta_t = as.numeric(input$beta.t),
+                                 beta_x = -as.numeric(input$beta.x),
+                                 beta_t = -as.numeric(input$beta.t),
                                  n.years = as.numeric(input$years),
                                  sigma_x = as.numeric(input$x.sd),
                                  sigma_t = as.numeric(input$t.sd),
@@ -170,6 +175,9 @@ server <- function(input, output, session) {
     if(as.numeric(input$beta.x) != 0){ 
       indices$SA_total <- computeSpatialAdaptationIndex(sim, resource_param)
     }else {indices$SA_total <- NA}
+    if(as.numeric(input$beta.t) != 0){ 
+      indices$STA_total <- computeTemporalAdaptationIndex(sim, resource_param)
+    }else {indices$TA_total <- NA}
     
     
     #parameters.df <- ldply (parameters, data.frame)
@@ -203,8 +211,8 @@ server <- function(input, output, session) {
     world$m0 <- fitMigration(t = world$time, x = getMem(world$pop, world))
     par0 <- getCCpars(mu_x0 = as.numeric(input$mu.x0), 
                       mu_t0 = as.numeric(input$mu.t0),
-                      beta_x = as.numeric(input$beta.x),
-                      beta_t = as.numeric(input$beta.t),
+                      beta_x = -as.numeric(input$beta.x),
+                      beta_t = -as.numeric(input$beta.t),
                       n.years = as.numeric(input$years),
                       sigma_x = as.numeric(input$x.sd),
                       sigma_t = as.numeric(input$t.sd),
@@ -217,7 +225,7 @@ server <- function(input, output, session) {
     }
     
     if(input$resource == "resources_drifting"){
-      Resource.CC <- aaply(par0, 1, function(p) getResource_drifting(world, p, as.numeric(input$x_null)))
+      Resource.CC <- aaply(par0, 1, function(p) getResource_drifting(world, p, 0))
       world$resource <- Resource.CC
     }
     attr(world$resource, "par") <- par0[nrow(par0),]
@@ -253,7 +261,7 @@ server <- function(input, output, session) {
     list(src = outfile,
          width = width,
          height = height,
-         alt = "This is alternate text")
+         alt = "The population plot will be displayed here.")
   }, deleteFile = TRUE)
   
   
@@ -273,11 +281,11 @@ server <- function(input, output, session) {
     list(src = outfile,
          width = width,
          height = height,
-         alt = "This is alternate text")
+         alt = "The resource plot will be displayed here.")
   }, deleteFile = TRUE)
   
   output$Indices <- renderTable({
-    simulation()[[2]][c("FE", "avgFE", "TE", "avgTE", "SA_total", "final_similarity", "n.runs" )]
+    simulation()[[2]][c("FE", "avgFE", "TE", "avgTE", "SA_total", "TA_total","final_similarity", "n.runs" )]
     
   }, digits = 3)
   
@@ -300,7 +308,7 @@ server <- function(input, output, session) {
     list(src = outfile,
          width = width,
          height = height,
-         alt = "This is alternate text")
+         alt = "The memory plots will be displayed here.")
   }, deleteFile = TRUE)
   
   output$MigrationHat <- renderImage({
@@ -325,7 +333,7 @@ server <- function(input, output, session) {
     list(src = outfile,
          width = width,
          height = height,
-         alt = "This is alternate text")
+         alt = "The memory plots will be displayed here.")
   }, deleteFile = TRUE)
   
   output$downloadData <- downloadHandler(
@@ -336,6 +344,7 @@ server <- function(input, output, session) {
     }
   )
 }
+
 
 
 
